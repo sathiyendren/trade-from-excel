@@ -34,7 +34,10 @@ const readExcelFile = async (path, filePath) => {
  */
 const buyScript = (scriptData) => {
     if(currentRunningBuyScript !== scriptData['Trading Symbol']) {
-        console.log(JSON.stringify(scriptData));
+        const quantity = scriptData['QTY']
+        const price = scriptData['ASK_Price']
+        const tradingSymbol = scriptData['Trading Symbol']
+        console.log(`BUY :::  ${tradingSymbol} for  ${quantity} Qunatity at Rs. ${price} `);
     }
     currentRunningBuyScript = scriptData['Trading Symbol'];
 }
@@ -44,7 +47,10 @@ const buyScript = (scriptData) => {
  */
 const sellScript = (scriptData) => {
     if(currentRunningSellScript !== scriptData['Trading Symbol']) {
-
+        const quantity = scriptData['QTY']
+        const price = scriptData['BID_Price']
+        const tradingSymbol = scriptData['Trading Symbol']
+        console.log(`SELL :::  ${tradingSymbol} for Qunatity ${quantity} at Rs. ${price}`);
     }
     currentRunningSellScript = scriptData['Trading Symbol'];
 }
@@ -62,7 +68,7 @@ const startCronTasks = () => {
         const excelData = await readExcelFile(filePath, sourceFileName);
         // console.log(`Result: ${JSON.stringify(excelData)}`);
         excelData.forEach(data => {
-            console.log(data['Trading Symbol']); // Sell Side
+            // console.log(data['Trading Symbol']); 
             if (data['Sell Side'] === 'S') {
                 sellScript(data);
             } else {
