@@ -3,8 +3,7 @@ var xlsx = require('xlsx');
 var Excel = require('exceljs');
 var algomojoConfig = require('./../algomojo.config.json');
 
-var currentRunningBuyScript = null;
-var currentRunningSellScript = null;
+var currentRunningScript = null;
 
 
 /**
@@ -33,26 +32,25 @@ const readExcelFile = async (path, filePath) => {
  * Buy Script
  */
 const buyScript = (scriptData) => {
-    if(currentRunningBuyScript !== scriptData['Trading Symbol']) {
-        const quantity = scriptData['QTY']
-        const price = scriptData['ASK_Price']
-        const tradingSymbol = scriptData['Trading Symbol']
-        console.log(`BUY :::  ${tradingSymbol} for  ${quantity} Qunatity at Rs. ${price} `);
-    }
-    currentRunningBuyScript = scriptData['Trading Symbol'];
+    const quantity = scriptData['Qty']
+    const price = scriptData['Ask Rate']
+    const tradingSymbol = scriptData['Symbol']
+    console.log(`BUY :::  ${tradingSymbol} for  ${quantity} Qunatity at Rs. ${price} `);
+
+    currentRunningScript = scriptData;
+
 }
 
 /**
  * Sell Script
  */
 const sellScript = (scriptData) => {
-    if(currentRunningSellScript !== scriptData['Trading Symbol']) {
-        const quantity = scriptData['QTY']
-        const price = scriptData['BID_Price']
-        const tradingSymbol = scriptData['Trading Symbol']
-        console.log(`SELL :::  ${tradingSymbol} for Qunatity ${quantity} at Rs. ${price}`);
-    }
-    currentRunningSellScript = scriptData['Trading Symbol'];
+    const quantity = scriptData['Qty']
+    const price = scriptData['BID Rate']
+    const tradingSymbol = scriptData['Symbol']
+    console.log(`SELL :::  ${tradingSymbol} for Qunatity ${quantity} at Rs. ${price}`);
+
+    currentRunningScript = null;
 }
 
 /**
@@ -63,21 +61,24 @@ const startCronTasks = () => {
     cron.schedule('*/1 * * * * *', async () => {
         console.log('--- RUNNING SCRIPT FOR EVERY 1 SECOND ---');
         var path = require('path');
-        var filePath = path.resolve('./excel-files/','');
+        var filePath = path.resolve('./excel-files/', '');
         const sourceFileName = '1.Abstract.xlsx';
         const excelData = await readExcelFile(filePath, sourceFileName);
         // console.log(`Result: ${JSON.stringify(excelData)}`);
         excelData.forEach(data => {
-            // console.log(data['Trading Symbol']); 
-            if (data['Sell Side'] === 'S') {
-                sellScript(data);
-            } else {
+            if (!currentRunningScript) {
+                buyScript(data);
+            } else if (data['Symbol' !== currentRunningScript['Symbol']]) {
+                if (currentRunningScript) {
+                    sellScript(currentRunningScript);
+                }
                 buyScript(data);
             }
+
         });
     });
 }
 
 module.exports = {
     startCronTasks,
-  };
+};
