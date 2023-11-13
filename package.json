@@ -1,0 +1,20 @@
+{
+  "name": "sample-node-project",
+  "version": "1.0.0",
+  "description": "Sample Node.js Project",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Adem Cemil YALCIN",
+  "license": "ISC",
+  "dependencies": {
+    "ejs": "latest",
+    "exceljs": "^4.4.0",
+    "express": "latest",
+    "node-cron": "^3.0.3",
+    "open": "^9.1.0",
+    "xlsx": "^0.18.5"
+  }
+}
